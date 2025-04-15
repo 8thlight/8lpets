@@ -1,0 +1,250 @@
+@page
+@model CheckersModel
+@{
+    ViewData["Title"] = "Checkers";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Checkers</h1>
+        <div>
+            <span class="8lpoints">8lPoints: @Model.User8lPoints</span>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">How to Play</h5>
+        </div>
+        <div class="card-body">
+            <p>Play Checkers against the computer! Move your pieces diagonally and capture opponent pieces by jumping over them.</p>
+            <ul>
+                <li>Each captured piece: 5 8lPoints</li>
+                <li>Win the game: Bonus 50 8lPoints</li>
+                <li>Get a king piece: 10 8lPoints</li>
+            </ul>
+        </div>
+    </div>
+
+    @if (Model.GameCompleted)
+    {
+        <div class="alert @(Model.PlayerWon ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+            <h5>@(Model.PlayerWon ? "Congratulations! You won!" : "Game Over! You lost.")</h5>
+            <p>@(Model.PlayerWon ? $"You captured {Model.PlayerCapturedPieces} pieces and earned {Model._8lPointsWon} 8lPoints!" : "Better luck next time!")</p>
+            <form method="post" asp-page-handler="NewGame">
+                <button type="submit" class="btn btn-primary">Play Again</button>
+            </form>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Checkers Game</h5>
+                    <div>
+                        <span class="badge bg-light text-dark me-2">Turn: @(Model.IsPlayerTurn ? "Your Turn" : "Computer's Turn")</span>
+                        <span class="badge bg-light text-dark me-2">Your Pieces: @Model.PlayerPiecesCount</span>
+                        <span class="badge bg-light text-dark">Computer Pieces: @Model.ComputerPiecesCount</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="checkers-board">
+                        @for (int row = 0; row < 8; row++)
+                        {
+                            <div class="checkers-row">
+                                @for (int col = 0; col < 8; col++)
+                                {
+                                    bool isDarkSquare = (row + col) % 2 == 1;
+                                    var piece = Model.Board[row * 8 + col];
+                                    string pieceClass = "";
+
+                                    if (piece == 1) pieceClass = "player-piece";
+                                    else if (piece == 2) pieceClass = "player-king";
+                                    else if (piece == 3) pieceClass = "computer-piece";
+                                    else if (piece == 4) pieceClass = "computer-king";
+
+                                    bool isSelected = Model.SelectedRow == row && Model.SelectedCol == col;
+                                    bool isValidMove = Model.ValidMoves.Any(m => m.ToRow == row && m.ToCol == col);
+
+                                    <div class="checkers-square @(isDarkSquare ? "dark-square" : "light-square") @(isSelected ? "selected" : "") @(isValidMove ? "valid-move" : "")">
+                                        @if (isDarkSquare)
+                                        {
+                                            if (pieceClass != "")
+                                            {
+                                                <form method="post" asp-page-handler="SelectPiece">
+                                                    <input type="hidden" name="row" value="@row" />
+                                                    <input type="hidden" name="col" value="@col" />
+                                                    <button type="submit" class="piece-button @pieceClass @(piece == 2 || piece == 4 ? "king" : "")"
+                                                            @((!Model.IsPlayerTurn || (piece != 1 && piece != 2) || Model.GameCompleted) ? "disabled" : "")>
+                                                        @if (piece == 2 || piece == 4)
+                                                        {
+                                                            <i class="fas fa-crown"></i>
+                                                        }
+                                                    </button>
+                                                </form>
+                                            }
+                                            else if (isValidMove)
+                                            {
+                                                <form method="post" asp-page-handler="MovePiece">
+                                                    <input type="hidden" name="toRow" value="@row" />
+                                                    <input type="hidden" name="toCol" value="@col" />
+                                                    <button type="submit" class="move-button"></button>
+                                                </form>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <form method="post" asp-page-handler="NewGame" class="d-inline">
+                    <button type="submit" class="btn btn-primary">New Game</button>
+                </form>
+                <a asp-page="/Games" class="btn btn-secondary ms-2">Back to Games</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Game Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <p>Games Played: @Model.GamesPlayed</p>
+                    <p>Games Won: @Model.GamesWon</p>
+                    <p>Win Rate: @Model.WinRateFormatted</p>
+                    <p>Total 8lPoints Won: @Model.Total8lPointsWon</p>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Games</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var game in Model.RecentGames)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    @(game.PlayerWon ? "Won" : "Lost") - @game.CapturedPieces pieces
+                                </span>
+                                <span class="badge bg-primary rounded-pill">
+                                    @game.PointsWon 8lP
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .checkers-board {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 3px solid #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .checkers-row {
+            display: flex;
+            width: 100%;
+        }
+
+        .checkers-square {
+            width: 12.5%;
+            position: relative;
+            padding-top: 12.5%; /* Makes squares maintain aspect ratio */
+        }
+
+        .light-square {
+            background-color: #f0d9b5;
+        }
+
+        .dark-square {
+            background-color: #b58863;
+        }
+
+        .selected {
+            background-color: #58a4b0;
+        }
+
+        .valid-move {
+            background-color: #a7c957;
+        }
+
+        .piece-button, .move-button {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .piece-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .move-button {
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 2px dashed #fff;
+        }
+
+        .move-button:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .player-piece {
+            background-color: #e63946;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .computer-piece {
+            background-color: #1d3557;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .player-king, .computer-king {
+            color: #ffd700;
+        }
+
+        .king i {
+            font-size: 1.5rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Add any client-side scripts here if needed
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-refresh the page when it's the computer's turn
+            @if (!Model.IsPlayerTurn && !Model.GameCompleted)
+            {
+                <text>
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1000);
+                </text>
+            }
+        });
+    </script>
+}

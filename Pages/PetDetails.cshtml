@@ -1,0 +1,152 @@
+@page
+@model PetDetailsModel
+@{
+    ViewData["Title"] = "Pet Details";
+}
+
+<div class="container">
+    <h1 class="mb-4">Pet Details</h1>
+
+    <partial name="_LoginStatusPartial" />
+
+    @if (Model.Pet == null)
+    {
+        <div class="alert alert-warning">
+            <p>Pet not found. <a asp-page="/MyPets">Return to My Pets</a></p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@Model.Pet.Name</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="https://placehold.co/400x300/@(Model.Pet.Color)/FFFFFF/png?text=@(Model.Pet.Species)" class="img-fluid rounded mb-3" alt="@Model.Pet.Name">
+
+                        <div class="pet-info">
+                            <p><strong>Species:</strong> @Model.Pet.Species</p>
+                            <p><strong>Color:</strong> @Model.Pet.Color</p>
+                            <p><strong>Adopted:</strong> @Model.Pet.CreatedDate.ToString("MMM d, yyyy")</p>
+                            <p><strong>Last Fed:</strong> @Model.Pet.LastFed.ToString("MMM d, yyyy h:mm tt")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Pet Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pet-stats">
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <p class="mb-0"><strong>Happiness</strong></p>
+                                    <span class="badge @(Model.Pet.Happiness < 30 ? "bg-danger" : (Model.Pet.Happiness < 70 ? "bg-warning" : "bg-success"))">
+                                        @(Model.Pet.Happiness < 30 ? "Unhappy" : (Model.Pet.Happiness < 70 ? "Content" : "Happy"))
+                                    </span>
+                                </div>
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar stat-bar-happiness" role="progressbar" style="width: @(Model.Pet.Happiness)%;" aria-valuenow="@Model.Pet.Happiness" aria-valuemin="0" aria-valuemax="100">@Model.Pet.Happiness%</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <p class="mb-0"><strong>Hunger</strong></p>
+                                    <span class="badge @(Model.Pet.Hunger < 30 ? "bg-danger" : (Model.Pet.Hunger < 70 ? "bg-warning" : "bg-success"))">
+                                        @(Model.Pet.Hunger < 30 ? "Hungry" : (Model.Pet.Hunger < 70 ? "Satisfied" : "Full"))
+                                    </span>
+                                </div>
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar stat-bar-hunger" role="progressbar" style="width: @(Model.Pet.Hunger)%;" aria-valuenow="@Model.Pet.Hunger" aria-valuemin="0" aria-valuemax="100">@Model.Pet.Hunger%</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <p class="mb-0"><strong>Health</strong></p>
+                                    <span class="badge @(Model.Pet.Health < 30 ? "bg-danger" : (Model.Pet.Health < 70 ? "bg-warning" : "bg-success"))">
+                                        @(Model.Pet.Health < 30 ? "Sick" : (Model.Pet.Health < 70 ? "Okay" : "Healthy"))
+                                    </span>
+                                </div>
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar stat-bar-health" role="progressbar" style="width: @(Model.Pet.Health)%;" aria-valuenow="@Model.Pet.Health" aria-valuemin="0" aria-valuemax="100">@Model.Pet.Health%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pet-status-message mt-4 p-3 bg-light rounded">
+                            @if (Model.Pet.Hunger < 30)
+                            {
+                                <p class="mb-0"><i class="fas fa-exclamation-triangle text-danger me-2"></i> @Model.Pet.Name is very hungry! Please feed them soon.</p>
+                            }
+                            else if (Model.Pet.Happiness < 30)
+                            {
+                                <p class="mb-0"><i class="fas fa-frown text-warning me-2"></i> @Model.Pet.Name is feeling sad. Try playing with them!</p>
+                            }
+                            else if (Model.Pet.Health < 30)
+                            {
+                                <p class="mb-0"><i class="fas fa-heartbeat text-danger me-2"></i> @Model.Pet.Name is not feeling well. They need medicine!</p>
+                            }
+                            else
+                            {
+                                <p class="mb-0"><i class="fas fa-smile text-success me-2"></i> @Model.Pet.Name is doing great! Keep up the good care.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Care Options</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <a asp-page="/FeedPet" asp-route-id="@Model.Pet.Id" class="btn btn-success w-100 py-3">
+                                    <i class="fas fa-utensils mb-2 d-block fs-3"></i>
+                                    Feed Pet
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a asp-page="/PlayWithPet" asp-route-id="@Model.Pet.Id" class="btn btn-warning w-100 py-3">
+                                    <i class="fas fa-baseball-ball mb-2 d-block fs-3"></i>
+                                    Play with Pet
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a asp-page="/Shop" class="btn btn-info w-100 py-3">
+                                    <i class="fas fa-shopping-cart mb-2 d-block fs-3"></i>
+                                    Buy Supplies
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a asp-page="/MyPets" class="btn btn-secondary">Back to My Pets</a>
+        </div>
+    }
+</div>
+
+<style>
+    .stat-bar-happiness {
+        background-color: #28a745;
+    }
+
+    .stat-bar-hunger {
+        background-color: #ffc107;
+    }
+
+    .stat-bar-health {
+        background-color: #dc3545;
+    }
+</style>

@@ -1,0 +1,141 @@
+html {
+  font-size: 14px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin-bottom: 60px;
+  font-family: 'Nunito', sans-serif;
+  background-color: #f8f9fa;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* 8lpets-inspired styling */
+.bg-primary {
+  background-color: #4b6cb7 !important;
+  background-image: linear-gradient(to right, #4b6cb7, #182848) !important;
+}
+
+.8lpets-logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.pet-card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pet-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.pet-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+.stat-bar {
+  height: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.stat-bar-happiness {
+  background-color: #ffc107;
+}
+
+.stat-bar-hunger {
+  background-color: #28a745;
+}
+
+.stat-bar-health {
+  background-color: #dc3545;
+}
+
+.shop-item {
+  transition: transform 0.2s ease;
+}
+
+.shop-item:hover {
+  transform: scale(1.05);
+}
+
+.8lpoints {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.welcome-banner {
+  background-color: #4b6cb7;
+  color: white;
+  padding: 2rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-image: linear-gradient(to right, #4b6cb7, #182848);
+}
+
+/* Login status styling */
+.login-status-box {
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.login-status-box:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.login-status-box.logged-in {
+  background-color: #e8f5e9;
+  border-left: 5px solid #28a745;
+}
+
+.login-status-box.logged-out {
+  background-color: #fff3e0;
+  border-left: 5px solid #ffc107;
+}
+
+.login-status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+.login-status-badge.logged-in {
+  background-color: #28a745;
+  color: white;
+}
+
+.login-status-badge.logged-out {
+  background-color: #ffc107;
+  color: #212529;
+}

@@ -1,0 +1,150 @@
+@page
+@model AdoptPetModel
+@{
+    ViewData["Title"] = "Adopt a Pet";
+}
+
+<div class="container">
+    <h1 class="mb-4">Adopt a Pet</h1>
+
+    <partial name="_LoginStatusPartial" />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Create Your New Pet</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pet.Name" class="form-label">Pet Name</label>
+                            <input asp-for="Pet.Name" class="form-control" />
+                            <span asp-validation-for="Pet.Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pet.Species" class="form-label">Species</label>
+                            <select asp-for="Pet.Species" class="form-control">
+                                <option value="">Select a species</option>
+                                <option value="Aisha">Aisha</option>
+                                <option value="Blumaroo">Blumaroo</option>
+                                <option value="Bori">Bori</option>
+                                <option value="Bruce">Bruce</option>
+                                <option value="Chomby">Chomby</option>
+                                <option value="Cybunny">Cybunny</option>
+                                <option value="Draik">Draik</option>
+                                <option value="Gelert">Gelert</option>
+                                <option value="Ixi">Ixi</option>
+                                <option value="Jubjub">Jubjub</option>
+                                <option value="Kacheek">Kacheek</option>
+                                <option value="Kougra">Kougra</option>
+                                <option value="Lupe">Lupe</option>
+                                <option value="Mynci">Mynci</option>
+                                <option value="Nimmo">Nimmo</option>
+                                <option value="Poogle">Poogle</option>
+                                <option value="Quiggle">Quiggle</option>
+                                <option value="Shoyru">Shoyru</option>
+                                <option value="Uni">Uni</option>
+                                <option value="Usul">Usul</option>
+                                <option value="Wocky">Wocky</option>
+                                <option value="Xweetok">Xweetok</option>
+                                <option value="Yurble">Yurble</option>
+                                <option value="Zafara">Zafara</option>
+                            </select>
+                            <span asp-validation-for="Pet.Species" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pet.Color" class="form-label">Color</label>
+                            <select asp-for="Pet.Color" class="form-control">
+                                <option value="">Select a color</option>
+                                <option value="Blue">Blue</option>
+                                <option value="Green">Green</option>
+                                <option value="Red">Red</option>
+                                <option value="Yellow">Yellow</option>
+                                <option value="Purple">Purple</option>
+                                <option value="Pink">Pink</option>
+                                <option value="Orange">Orange</option>
+                                <option value="Brown">Brown</option>
+                                <option value="White">White</option>
+                                <option value="Black">Black</option>
+                            </select>
+                            <span asp-validation-for="Pet.Color" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Adopt Pet</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Pet Preview</h5>
+                </div>
+                <div class="card-body text-center">
+                    <img id="petPreview" src="https://placehold.co/400x300/cccccc/FFFFFF/png?text=Select+Species+and+Color" class="img-fluid rounded" alt="Pet Preview">
+                    <h3 id="petName" class="mt-3">Your Pet's Name</h3>
+                    <p id="petDetails" class="text-muted">Species and Color</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('Pet_Name');
+            const speciesSelect = document.getElementById('Pet_Species');
+            const colorSelect = document.getElementById('Pet_Color');
+            const petPreview = document.getElementById('petPreview');
+            const petName = document.getElementById('petName');
+            const petDetails = document.getElementById('petDetails');
+
+            function updatePreview() {
+                const name = nameInput.value || 'Your Pet\'s Name';
+                const species = speciesSelect.value || 'Species';
+                const color = colorSelect.value || 'Color';
+
+                petName.textContent = name;
+                petDetails.textContent = `${species} - ${color}`;
+
+                if (species && color) {
+                    petPreview.src = `https://placehold.co/400x300/${getColorHex(color)}/FFFFFF/png?text=${species}`;
+                } else {
+                    petPreview.src = 'https://placehold.co/400x300/cccccc/FFFFFF/png?text=Select+Species+and+Color';
+                }
+            }
+
+            function getColorHex(color) {
+                const colorMap = {
+                    'Blue': '0000FF',
+                    'Green': '008000',
+                    'Red': 'FF0000',
+                    'Yellow': 'FFFF00',
+                    'Purple': '800080',
+                    'Pink': 'FFC0CB',
+                    'Orange': 'FFA500',
+                    'Brown': 'A52A2A',
+                    'White': 'FFFFFF',
+                    'Black': '000000'
+                };
+
+                return colorMap[color] || 'CCCCCC';
+            }
+
+            nameInput.addEventListener('input', updatePreview);
+            speciesSelect.addEventListener('change', updatePreview);
+            colorSelect.addEventListener('change', updatePreview);
+
+            // Initial update
+            updatePreview();
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

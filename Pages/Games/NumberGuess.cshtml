@@ -1,0 +1,97 @@
+@page
+@model NumberGuessModel
+@{
+    ViewData["Title"] = "Number Guess Game";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Number Guess</h1>
+        <div>
+            <span class="8lpoints">8lPoints: @Model.User8lPoints</span>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">How to Play</h5>
+        </div>
+        <div class="card-body">
+            <p>Guess a number between 1 and 100. The closer your guess is to the secret number, the more 8lPoints you'll win!</p>
+            <ul>
+                <li>Exact match: 100 8lPoints</li>
+                <li>Within 5: 50 8lPoints</li>
+                <li>Within 10: 25 8lPoints</li>
+                <li>Within 20: 10 8lPoints</li>
+                <li>Other guesses: 5 8lPoints for trying</li>
+            </ul>
+        </div>
+    </div>
+
+    @if (Model.GameResult != null)
+    {
+        <div class="alert @(Model.IsCorrectGuess ? "alert-success" : "alert-info") alert-dismissible fade show" role="alert">
+            <h5>@Model.GameResult</h5>
+            @if (Model._8lPointsWon > 0)
+            {
+                <p>You won <span class="8lpoints">@Model._8lPointsWon 8lPoints</span>!</p>
+            }
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Make Your Guess</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="UserGuess" class="form-label">Your Guess (1-100)</label>
+                            <input asp-for="UserGuess" class="form-control" type="number" min="1" max="100" required />
+                            <span asp-validation-for="UserGuess" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Guess</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Game Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <p>Games Played: @Model.GamesPlayed</p>
+                    <p>Total 8lPoints Won: @Model.Total8lPointsWon</p>
+                    <p>Best Guess: @(Model.BestGuess == int.MaxValue ? "None yet" : Model.BestGuess.ToString())</p>
+
+                    @if (Model.PreviousGuesses.Any())
+                    {
+                        <h6 class="mt-3">Previous Guesses:</h6>
+                        <ul class="list-group">
+                            @foreach (var guess in Model.PreviousGuesses.Take(5))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Guess: @guess.Guess
+                                    <span class="badge bg-primary rounded-pill">@guess.Difference off</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/Games" class="btn btn-secondary">Back to Games</a>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

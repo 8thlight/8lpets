@@ -1,0 +1,198 @@
+@page
+@model ActivityModel
+@{
+    ViewData["Title"] = "Account Activity";
+}
+
+<div class="container">
+    <h1 class="mb-4">Account Activity</h1>
+
+    <partial name="_SuccessMessage" />
+    <partial name="_LoginStatusPartial" />
+
+    @if (!Model.IsAuthenticated)
+    {
+        <div class="alert alert-warning">
+            <p>You need to <a asp-page="/Account/Login">log in</a> to view your account activity.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group mb-4">
+                    <a asp-page="/Account/Profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> Profile
+                    </a>
+                    <a asp-page="/Account/Activity" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-chart-line me-2"></i> Activity
+                    </a>
+                    <a asp-page="/Account/EditProfile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-edit me-2"></i> Edit Profile
+                    </a>
+                    <a asp-page="/Account/ChangePassword" class="list-group-item list-group-item-action">
+                        <i class="fas fa-key me-2"></i> Change Password
+                    </a>
+                    <a asp-page="/Account/Logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Account Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="activity-stat">
+                                    <div class="activity-stat-value">@Model.CurrentUser.NeoPoints</div>
+                                    <div class="activity-stat-label">8lPoints</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="activity-stat">
+                                    <div class="activity-stat-value">@Model.CurrentUser.Pets.Count</div>
+                                    <div class="activity-stat-label">Pets</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="activity-stat">
+                                    <div class="activity-stat-value">@Model.CurrentUser.Inventory.Count</div>
+                                    <div class="activity-stat-label">Items</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="activity-stat">
+                                    <div class="activity-stat-value">@(Model.DaysActive)</div>
+                                    <div class="activity-stat-label">Days Active</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Recent Pet Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (!Model.CurrentUser.Pets.Any())
+                        {
+                            <p>You don't have any pets yet. <a asp-page="/AdoptPet">Adopt a pet</a> to get started!</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Pet</th>
+                                            <th>Species</th>
+                                            <th>Adopted</th>
+                                            <th>Last Fed</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var pet in Model.CurrentUser.Pets.OrderByDescending(p => p.LastFed))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <a asp-page="/PetDetails" asp-route-id="@pet.Id">@pet.Name</a>
+                                                </td>
+                                                <td>@pet.Species</td>
+                                                <td>@pet.CreatedDate.ToString("MMM d, yyyy")</td>
+                                                <td>@pet.LastFed.ToString("MMM d, yyyy h:mm tt")</td>
+                                                <td>
+                                                    @if (pet.Hunger < 30)
+                                                    {
+                                                        <span class="badge bg-danger">Hungry</span>
+                                                    }
+                                                    else if (pet.Happiness < 30)
+                                                    {
+                                                        <span class="badge bg-warning text-dark">Unhappy</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-success">Happy</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Recent Purchases</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (!Model.CurrentUser.Inventory.Any())
+                        {
+                            <p>You haven't purchased any items yet. Visit the <a asp-page="/Shop">Shop</a> to buy items!</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Type</th>
+                                            <th>Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.CurrentUser.Inventory.Take(5))
+                                        {
+                                            <tr>
+                                                <td>@item.Name</td>
+                                                <td>@item.Type</td>
+                                                <td>@item.Price 8lP</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                                @if (Model.CurrentUser.Inventory.Count > 5)
+                                {
+                                    <div class="text-center mt-3">
+                                        <a asp-page="/Inventory" class="btn btn-outline-primary">View All Items</a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .activity-stat {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+
+    .activity-stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #4b6cb7;
+    }
+
+    .activity-stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+    }
+</style>

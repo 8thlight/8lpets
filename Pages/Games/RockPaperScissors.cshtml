@@ -1,0 +1,177 @@
+@page
+@model RockPaperScissorsModel
+@{
+    ViewData["Title"] = "Rock Paper Scissors";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Rock Paper Scissors</h1>
+        <div>
+            <span class="8lpoints">8lPoints: @Model.User8lPoints</span>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">How to Play</h5>
+        </div>
+        <div class="card-body">
+            <p>Choose rock, paper, or scissors to play against the computer!</p>
+            <ul>
+                <li>Win: 25 8lPoints</li>
+                <li>Tie: 5 8lPoints</li>
+                <li>Lose: 0 8lPoints</li>
+            </ul>
+            <p><strong>Remember:</strong> Rock beats Scissors, Scissors beats Paper, Paper beats Rock.</p>
+        </div>
+    </div>
+
+    @if (Model.GameResult != null)
+    {
+        <div class="alert @Model.ResultAlertClass alert-dismissible fade show" role="alert">
+            <h5>@Model.GameResult</h5>
+            @if (Model._8lPointsWon > 0)
+            {
+                <p>You won <span class="8lpoints">@Model._8lPointsWon 8lPoints</span>!</p>
+            }
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Make Your Choice</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <form method="post">
+                                <input type="hidden" name="playerChoice" value="Rock" />
+                                <button type="submit" class="btn btn-outline-primary p-4 w-100 h-100">
+                                    <i class="fas fa-hand-rock fa-4x mb-2"></i>
+                                    <h4>Rock</h4>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <form method="post">
+                                <input type="hidden" name="playerChoice" value="Paper" />
+                                <button type="submit" class="btn btn-outline-primary p-4 w-100 h-100">
+                                    <i class="fas fa-hand-paper fa-4x mb-2"></i>
+                                    <h4>Paper</h4>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <form method="post">
+                                <input type="hidden" name="playerChoice" value="Scissors" />
+                                <button type="submit" class="btn btn-outline-primary p-4 w-100 h-100">
+                                    <i class="fas fa-hand-scissors fa-4x mb-2"></i>
+                                    <h4>Scissors</h4>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.LastGame != null)
+            {
+                <div class="card mt-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Last Game</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-5">
+                                <h4>You</h4>
+                                <div class="display-1 mb-2">
+                                    @switch (Model.LastGame.PlayerChoice)
+                                    {
+                                        case "Rock":
+                                            <i class="fas fa-hand-rock"></i>
+                                            break;
+                                        case "Paper":
+                                            <i class="fas fa-hand-paper"></i>
+                                            break;
+                                        case "Scissors":
+                                            <i class="fas fa-hand-scissors"></i>
+                                            break;
+                                    }
+                                </div>
+                                <h5>@Model.LastGame.PlayerChoice</h5>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                <h3>VS</h3>
+                            </div>
+                            <div class="col-md-5">
+                                <h4>Computer</h4>
+                                <div class="display-1 mb-2">
+                                    @switch (Model.LastGame.ComputerChoice)
+                                    {
+                                        case "Rock":
+                                            <i class="fas fa-hand-rock"></i>
+                                            break;
+                                        case "Paper":
+                                            <i class="fas fa-hand-paper"></i>
+                                            break;
+                                        case "Scissors":
+                                            <i class="fas fa-hand-scissors"></i>
+                                            break;
+                                    }
+                                </div>
+                                <h5>@Model.LastGame.ComputerChoice</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Game Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <p>Games Played: @Model.GamesPlayed</p>
+                    <p>Wins: @Model.Wins</p>
+                    <p>Ties: @Model.Ties</p>
+                    <p>Losses: @Model.Losses</p>
+                    <p>Win Rate: @Model.WinRate%</p>
+                    <p>Total 8lPoints Won: @Model.Total8lPointsWon</p>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Games</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var game in Model.RecentGames)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    @game.PlayerChoice vs @game.ComputerChoice
+                                </span>
+                                <span class="badge @(game.Result == "Win" ? "bg-success" : (game.Result == "Tie" ? "bg-warning" : "bg-danger")) rounded-pill">
+                                    @game.Result
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/Games" class="btn btn-secondary">Back to Games</a>
+    </div>
+</div>
+
+

@@ -1,0 +1,86 @@
+@page
+@model ShopModel
+@{
+    ViewData["Title"] = "Shop";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Shop</h1>
+        <div>
+            <span class="badge bg-info">Last Restock: @Model.LastRestockTime.ToString("HH:mm:ss")</span>
+            <span class="badge bg-warning">Next Restock: @Model.TimeUntilNextRestock</span>
+            <span class="badge bg-secondary">Items: @Model.Items.Count / 20</span>
+        </div>
+    </div>
+    <div class="alert alert-info mb-4">
+        <i class="bi bi-info-circle"></i> The shop restocks every 10 minutes with a maximum of 20 items. If the shop already has 20 items, all items will be refreshed. Check back regularly for new items!
+    </div>
+
+    <partial name="_LoginStatusPartial" />
+
+    @if (Model.SuccessMessage != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Model.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        @foreach (var item in Model.Items)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shop-item">
+                    <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? $"https://placehold.co/600x400/random/FFFFFF/png?text={item.Name}" : item.ImageUrl)" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">@item.Description</p>
+                        <p class="card-text"><span class="8lpoints">@item.Price 8lP</span></p>
+                        <p class="card-text"><small class="text-muted">Type: @item.Type</small></p>
+                        <form method="post">
+                            <input type="hidden" asp-for="ItemId" value="@item.Id" />
+                            <button type="submit" class="btn btn-primary">Buy</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <!-- Toast notification for restock -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="restockToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto">Shop Restocked!</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                New items have been added to the shop! Check them out before they're gone!
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Function to show the restock toast
+        function showRestockToast() {
+            var toast = new bootstrap.Toast(document.getElementById('restockToast'));
+            toast.show();
+        }
+
+        // Auto-refresh the page when a restock happens
+        setTimeout(function() {
+            window.location.reload();
+        }, @(Math.Max(0, (Model.LastRestockTime.AddMinutes(10) - DateTime.Now).TotalMilliseconds)));
+    </script>
+}

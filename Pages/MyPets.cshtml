@@ -1,0 +1,138 @@
+@page
+@model MyPetsModel
+@{
+    ViewData["Title"] = "My Pets";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">My Pets</h1>
+        <div class="food-inventory">
+            <span class="badge bg-success"><i class="fas fa-drumstick-bite me-1"></i> Food: @Model.FoodItems.Count</span>
+            <a asp-page="/Shop" class="btn btn-sm btn-outline-primary ms-2">Shop</a>
+        </div>
+    </div>
+
+    <partial name="_LoginStatusPartial" />
+
+    @if (Model.SuccessMessage != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Model.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Pets.Any())
+    {
+        <div class="alert alert-info">
+            <p>You don't have any pets yet. Adopt a new pet to get started!</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var pet in Model.Pets)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card pet-card">
+                        <img src="https://placehold.co/600x400/@(pet.Color)/FFFFFF/png?text=@(pet.Species)" class="card-img-top pet-image" alt="@pet.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">@pet.Name</h5>
+                            <p class="card-text">Species: @pet.Species</p>
+                            <p class="card-text">Color: @pet.Color</p>
+
+                            <div class="mt-3">
+                                <p class="mb-1">Happiness</p>
+                                <div class="progress">
+                                    <div class="progress-bar stat-bar-happiness" role="progressbar" style="width: @(pet.Happiness)%;" aria-valuenow="@pet.Happiness" aria-valuemin="0" aria-valuemax="100">@pet.Happiness%</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2">
+                                <p class="mb-1">Hunger</p>
+                                <div class="progress">
+                                    <div class="progress-bar stat-bar-hunger" role="progressbar" style="width: @(pet.Hunger)%;" aria-valuenow="@pet.Hunger" aria-valuemin="0" aria-valuemax="100">@pet.Hunger%</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2">
+                                <p class="mb-1">Health</p>
+                                <div class="progress">
+                                    <div class="progress-bar stat-bar-health" role="progressbar" style="width: @(pet.Health)%;" aria-valuenow="@pet.Health" aria-valuemin="0" aria-valuemax="100">@pet.Health%</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <a asp-page="/PetDetails" asp-route-id="@pet.Id" class="btn btn-primary">View Details</a>
+                                <div class="btn-group mt-2 w-100">
+                                    <a asp-page="/FeedPet" asp-route-id="@pet.Id" class="btn btn-success">Feed Options</a>
+                                    <form method="post" asp-page-handler="QuickFeed" asp-route-petId="@pet.Id" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-success">
+                                            <i class="fas fa-utensils"></i> Quick Feed
+                                        </button>
+                                    </form>
+                                </div>
+                                <a asp-page="/PlayWithPet" asp-route-id="@pet.Id" class="btn btn-warning mt-2 w-100">Play</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-page="/AdoptPet" class="btn btn-primary">Adopt a New Pet</a>
+    </div>
+</div>
+
+<style>
+    .btn-group {
+        display: flex;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+    }
+
+    .btn-group form {
+        flex: 0 0 auto;
+    }
+
+    .pet-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pet-card .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pet-card .mt-3 {
+        margin-top: auto !important;
+    }
+
+    .stat-bar-happiness {
+        background-color: #28a745;
+    }
+
+    .stat-bar-hunger {
+        background-color: #ffc107;
+    }
+
+    .stat-bar-health {
+        background-color: #dc3545;
+    }
+</style>

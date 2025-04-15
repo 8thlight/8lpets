@@ -1,0 +1,80 @@
+@page
+@model GamesModel
+@{
+    ViewData["Title"] = "Games";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Games</h1>
+    </div>
+
+    <partial name="_LoginStatusPartial" />
+
+    @if (Model.SuccessMessage != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Model.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card pet-card">
+                <img src="https://placehold.co/600x400/4b6cb7/FFFFFF/png?text=Number+Guess" class="card-img-top pet-image" alt="Number Guess">
+                <div class="card-body">
+                    <h5 class="card-title">Number Guess</h5>
+                    <p class="card-text">Guess a number between 1 and 100. The closer you are, the more NeoPoints you win!</p>
+                    <a asp-page="/Games/NumberGuess" class="btn btn-primary">Play</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card pet-card">
+                <img src="https://placehold.co/600x400/182848/FFFFFF/png?text=Rock+Paper+Scissors" class="card-img-top pet-image" alt="Rock Paper Scissors">
+                <div class="card-body">
+                    <h5 class="card-title">Rock Paper Scissors</h5>
+                    <p class="card-text">Play the classic game against the computer and win NeoPoints!</p>
+                    <a asp-page="/Games/RockPaperScissors" class="btn btn-primary">Play</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card pet-card">
+                <img src="https://placehold.co/600x400/6a82fb/FFFFFF/png?text=Memory+Match" class="card-img-top pet-image" alt="Memory Match">
+                <div class="card-body">
+                    <h5 class="card-title">Memory Match</h5>
+                    <p class="card-text">Test your memory by matching pairs of cards. Win NeoPoints for each match!</p>
+                    <a asp-page="/Games/MemoryMatch" class="btn btn-primary">Play</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="card pet-card">
+                <img src="https://placehold.co/600x400/4b6cb7/FFFFFF/png?text=Dice+Roll" class="card-img-top pet-image" alt="Dice Roll">
+                <div class="card-body">
+                    <h5 class="card-title">Dice Roll</h5>
+                    <p class="card-text">Roll the dice and win NeoPoints based on your roll!</p>
+                    <a asp-page="/Games/DiceRoll" class="btn btn-primary">Play</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card pet-card">
+                <img src="https://placehold.co/600x400/b58863/FFFFFF/png?text=Checkers" class="card-img-top pet-image" alt="Checkers">
+                <div class="card-body">
+                    <h5 class="card-title">Checkers</h5>
+                    <p class="card-text">Play Checkers against the computer and win NeoPoints for each captured piece!</p>
+                    <a asp-page="/Games/Checkers" class="btn btn-primary">Play</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

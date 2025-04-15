@@ -1,0 +1,73 @@
+@page
+@model InventoryModel
+@{
+    ViewData["Title"] = "Inventory";
+}
+
+<div class="container">
+    <h1 class="mb-4">My Inventory</h1>
+
+    <partial name="_LoginStatusPartial" />
+
+    @if (!Model.Items.Any())
+    {
+        <div class="alert alert-info">
+            <p>Your inventory is empty. Visit the <a asp-page="/Shop">Shop</a> to buy items!</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model.Items)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shop-item">
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? $"https://placehold.co/600x400/random/FFFFFF/png?text={item.Name}" : item.ImageUrl)" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text">@item.Description</p>
+                            <p class="card-text"><small class="text-muted">Type: @item.Type</small></p>
+
+                            @if (item.Type == "Food")
+                            {
+                                <form method="post">
+                                    <input type="hidden" asp-for="ItemId" value="@item.Id" />
+                                    <div class="form-group mb-3">
+                                        <label for="petId">Feed to:</label>
+                                        <select class="form-control" id="petId" name="PetId">
+                                            @foreach (var pet in Model.Pets)
+                                            {
+                                                <option value="@pet.Id">@pet.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Feed Pet</button>
+                                </form>
+                            }
+                            else if (item.Type == "Toy")
+                            {
+                                <form method="post" asp-page-handler="PlayWithPet">
+                                    <input type="hidden" asp-for="ItemId" value="@item.Id" />
+                                    <div class="form-group mb-3">
+                                        <label for="petId">Play with:</label>
+                                        <select class="form-control" id="petId" name="PetId">
+                                            @foreach (var pet in Model.Pets)
+                                            {
+                                                <option value="@pet.Id">@pet.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-warning">Play with Pet</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary" disabled>Use Item</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

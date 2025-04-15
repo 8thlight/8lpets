@@ -1,0 +1,77 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<partial name="_SuccessMessage" />
+
+<partial name="_LoginStatusPartial" />
+
+<div class="welcome-banner text-center">
+    @if (Model.IsAuthenticated)
+    {
+        <h1 class="display-4">Welcome back, @(Model.CurrentUser?.Username ?? "User")!</h1>
+        <p class="lead">Continue your adventure with your virtual pets!</p>
+    }
+    else
+    {
+        <h1 class="display-4">Welcome to 8lPets!</h1>
+        <p class="lead">Adopt virtual pets, play games, and explore a world of fun!</p>
+    }
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 pet-card">
+            <img src="https://placehold.co/600x400/4b6cb7/FFFFFF/png?text=Adopt+a+Pet" class="card-img-top pet-image" alt="Adopt a Pet">
+            <div class="card-body">
+                <h5 class="card-title">Adopt a Pet</h5>
+                <p class="card-text">Choose from various species and colors to find your perfect companion!</p>
+                <a asp-page="/MyPets" class="btn btn-primary">Adopt Now</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 pet-card">
+            <img src="https://placehold.co/600x400/182848/FFFFFF/png?text=Play+Games" class="card-img-top pet-image" alt="Play Games">
+            <div class="card-body">
+                <h5 class="card-title">Play Games</h5>
+                <p class="card-text">Have fun and earn 8lPoints by playing exciting mini-games!</p>
+                <a asp-page="/Games" class="btn btn-primary">Play Now</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 pet-card">
+            <img src="https://placehold.co/600x400/6a82fb/FFFFFF/png?text=Shop" class="card-img-top pet-image" alt="Shop">
+            <div class="card-body">
+                <h5 class="card-title">Shop</h5>
+                <p class="card-text">Buy food, toys, and other items for your pets using 8lPoints!</p>
+                <a asp-page="/Shop" class="btn btn-primary">Shop Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Latest News</h5>
+            </div>
+            <div class="card-body">
+                <div class="news-item mb-3">
+                    <h6>Welcome to 8lPets!</h6>
+                    <p class="text-muted">April 15, 2025</p>
+                    <p>We're excited to launch 8lPets! Explore the site, adopt pets, and have fun!</p>
+                </div>
+                <div class="news-item mb-3">
+                    <h6>New Pet Species Coming Soon!</h6>
+                    <p class="text-muted">April 10, 2025</p>
+                    <p>Stay tuned for exciting new pet species that will be available for adoption next week!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
