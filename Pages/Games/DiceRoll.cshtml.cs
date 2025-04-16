@@ -153,8 +153,19 @@ namespace _8lpets.Pages.Games
 
             // Get game statistics from session
             TotalRolls = HttpContext.Session.GetInt32(TotalRollsKey) ?? 0;
-            var bestRollString = HttpContext.Session.GetString(BestRollKey);
-            BestRoll = !string.IsNullOrEmpty(bestRollString) ? bestRollString : "None";
+            
+            // Display the best roll
+            var bestRollJson = HttpContext.Session.GetString(BestRollKey);
+            if (!string.IsNullOrEmpty(bestRollJson))
+            {
+                var bestRoll = JsonSerializer.Deserialize<DiceRollRecord>(bestRollJson);
+                BestRoll = bestRoll?.DiceValues ?? "None";
+            }
+            else
+            {
+                BestRoll = "None";
+            }
+            
             Total8lPointsWon = HttpContext.Session.GetInt32(TotalPointsWonKey) ?? 0;
 
             // Get recent rolls from session
@@ -185,19 +196,21 @@ namespace _8lpets.Pages.Games
             HttpContext.Session.SetInt32(TotalRollsKey, TotalRolls);
 
             // Update best roll if this one is better
-            var bestRollString = HttpContext.Session.GetString(BestRollKey);
-            var bestRollJson = !string.IsNullOrEmpty(bestRollString) ? bestRollString : null;
-
-            if (bestRollJson == null || roll.PointsWon > 0)
+            var bestRollJson = HttpContext.Session.GetString(BestRollKey);
+            
+            if (string.IsNullOrEmpty(bestRollJson))
             {
-                var currentBestRoll = !string.IsNullOrEmpty(bestRollJson)
-                    ? JsonSerializer.Deserialize<DiceRollRecord>(bestRollJson)
-                    : null;
-
-                if (currentBestRoll == null || roll.PointsWon > currentBestRoll.PointsWon)
+                // First roll becomes the best roll
+                BestRoll = roll.DiceValues;
+                HttpContext.Session.SetString(BestRollKey, JsonSerializer.Serialize(roll));
+            }
+            else
+            {
+                var currentBestRoll = JsonSerializer.Deserialize<DiceRollRecord>(bestRollJson);
+                if (roll.PointsWon > currentBestRoll.PointsWon)
                 {
                     BestRoll = roll.DiceValues;
-                    HttpContext.Session.SetString(BestRollKey, roll.DiceValues);
+                    HttpContext.Session.SetString(BestRollKey, JsonSerializer.Serialize(roll));
                 }
             }
 
@@ -205,7 +218,7 @@ namespace _8lpets.Pages.Games
             Total8lPointsWon = (HttpContext.Session.GetInt32(TotalPointsWonKey) ?? 0) + roll.PointsWon;
             HttpContext.Session.SetInt32(TotalPointsWonKey, Total8lPointsWon);
 
-            // Add to recent rolls
+            // Update recent rolls
             var recentRollsJson = HttpContext.Session.GetString(RecentRollsKey);
             var recentRolls = !string.IsNullOrEmpty(recentRollsJson)
                 ? JsonSerializer.Deserialize<List<DiceRollRecord>>(recentRollsJson)
